@@ -13,17 +13,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import br.com.hospitalfind.Model.PlaceDetail;
 import br.com.hospitalfind.resource.GooglePlacesResources;
-
 import com.example.hospital.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class Mapactivity extends Activity implements LocationListener {
+public class Mapactivity extends Activity implements LocationListener,OnMarkerClickListener,AsyncResponse  {
 
 	// Initialize the location fields
 	private PlacesTask PTask = null;
@@ -33,7 +33,6 @@ public class Mapactivity extends Activity implements LocationListener {
 	private LatLng Loc;
 	private GoogleMap map;
 	private Marker meuLocal;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +54,7 @@ public class Mapactivity extends Activity implements LocationListener {
 		}
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		map.setOnMarkerClickListener(this);
 		meuLocal = map.addMarker(new MarkerOptions()
 		.position(Loc)
 		.icon(BitmapDescriptorFactory.defaultMarker(
@@ -121,6 +121,12 @@ public class Mapactivity extends Activity implements LocationListener {
 		Toast.makeText(this, "Disabled provider " + provider,
 				Toast.LENGTH_SHORT).show();
 	}
+	@Override
+	public boolean onMarkerClick(Marker arg0) {
+		Toast.makeText(this, arg0.getPosition().toString() , Toast.LENGTH_SHORT).show();
+		
+		return false;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -130,8 +136,18 @@ public class Mapactivity extends Activity implements LocationListener {
 		int id = item.getItemId();
 		switch (id) {
         case R.id.action_search:
-        	PTask = new PlacesTask(String.valueOf(Loc.latitude),String.valueOf( Loc.longitude), "5000", this);
-			PTask.execute((Void) null);
+        	map.clear();
+        	map.addMarker(new MarkerOptions()
+    		.position(meuLocal.getPosition())
+    		.icon(BitmapDescriptorFactory.defaultMarker(
+    			     BitmapDescriptorFactory.HUE_AZURE))
+    		.title(meuLocal.getTitle())
+    		.snippet(meuLocal.getSnippet())
+    				);
+    		
+        	PTask = new PlacesTask(String.valueOf(Loc.latitude),String.valueOf( Loc.longitude), "5000");
+        	PTask.delegate = this;
+        	PTask.execute((Void) null);
 			return true;
 			
         case R.id.action_settings:
@@ -150,26 +166,29 @@ public class Mapactivity extends Activity implements LocationListener {
 		return true;
 	}
 
-	public class PlacesTask extends AsyncTask<Void, Void, PlaceDetail[]> {
+	public class PlacesTask extends AsyncTask<Void, Void, PlaceDetail[]>  {
+		public AsyncResponse delegate=null;
 
 		private final String lat;
 		private final String lng;
 		private final String rad;
-		private Context c = null;
 		private PlaceDetail[] plc = null;
 
-		PlacesTask(String la, String lo, String ra, Context ctx) {
+		PlacesTask(String la, String lo, String ra) {
 			lat = la;
 			lng = lo;
 			rad = ra;
-			c = ctx;
-		}
+			}
 
+		
+		
 		@Override
 		protected PlaceDetail[] doInBackground(Void... params) {
 
-		
+			
 			plc = GooglePlacesResources.buscar(lat, lng, rad,"");
+			
+			
 			return plc;
 
 		}
@@ -177,16 +196,8 @@ public class Mapactivity extends Activity implements LocationListener {
 		@Override
 		protected void onPostExecute(final PlaceDetail[] success) {
 			PTask = null;
-			// showProgress(false);
-			for (int i = 0; i < success.length; i++) {
-				;
-				double lLat = Double.parseDouble(success[i].getLat());
-				double lLng = Double.parseDouble(success[i].getLon());
-				Marker Local = map.addMarker(new MarkerOptions()
-				.position(new LatLng(lLat, lLng))
-				.title(success[i].getName() + " " + success[i].getRatings()));
-
-			}
+			delegate.processFinish(success);
+			
 		}
 
 		@Override
@@ -195,4 +206,22 @@ public class Mapactivity extends Activity implements LocationListener {
 			// showProgress(false);
 		}
 	}
+		
+		@Override
+		public void processFinish(PlaceDetail[] success) {
+			for (int i = 0; i < success.length; i++) {
+				;
+				Marker Local = map.addMarker(new MarkerOptions()
+				.position(new LatLng(
+						Double.parseDouble(success[i].getLat()), 
+						Double.parseDouble(success[i].getLon())
+				))
+				.title(success[i].getName()));
+				
+			}
+			
+		}
+
+	
+	
 }

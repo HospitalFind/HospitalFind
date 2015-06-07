@@ -136,6 +136,7 @@ public class PlacesService {
             place.placeId = jsonObj.getString("place_id");
             place.lon = jsonObj.getJSONObject("geometry").getJSONObject("location").getString("lng");
             place.name =jsonObj.getString("name");
+            place.end=jsonObj.getString("formatted_address");
             place.lat = jsonObj.getJSONObject("geometry").getJSONObject("location").getString("lat");
             if (jsonObj.has("rating")) {
             	place.ratings = jsonObj.getInt("rating");

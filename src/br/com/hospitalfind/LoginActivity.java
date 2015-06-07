@@ -91,7 +91,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 				bularSistema();
 			}
 		});
-
 		Button mDesvButton = (Button) findViewById(R.id.desv_button);
 		mDesvButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -99,16 +98,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 				desvScreen();
 			}
 		});
-		
 		mLoginFormView = findViewById(R.id.login_form);
 		mProgressView = findViewById(R.id.login_progress);
 	}
 
-	private void desvScreen() {
-		final Intent d = new Intent (this, MainActivity.class);
-		startActivity(d);
-	}
-	
 	private void bularSistema() {
 		final Intent c = new Intent (this, CadastroActivity.class);
 		startActivity(c);
@@ -172,7 +165,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 			
 		}
 	}
-	
+	private void desvScreen() {
+		final Intent d = new Intent (this, MainActivity.class);
+		startActivity(d);
+	}
 	
 	private boolean isEmailValid(String email) {
 		// TODO: Replace this with your own logic

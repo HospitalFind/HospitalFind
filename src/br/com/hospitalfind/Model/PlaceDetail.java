@@ -7,7 +7,7 @@ public class PlaceDetail {
 	@Override
 	public String toString() {
 		return "Place [name=" + name + ", placeId=" + placeId + ", lat=" + lat
-			+ ", lon=" + lon + ", ratings=" + ratings + ", token="+page+"]";
+			+ ", lon=" + lon + ", ratings=" + ratings + ", Endereço="+end+"]";
 	}
 	
 	public String placeId;
@@ -16,6 +16,12 @@ public class PlaceDetail {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getEnd() {
+		return end;
+	}
+	public void setEnd(String end) {
+		this.end = end;
 	}
 	public String getPlaceId() {
 		return placeId;
@@ -52,6 +58,7 @@ public class PlaceDetail {
 	public String page;
 	public String lat;
 	public String lon;
+	public String end;
 	public int ratings;
 	
 }
