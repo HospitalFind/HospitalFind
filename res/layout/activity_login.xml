@@ -69,8 +69,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_register_in"
                 android:textStyle="bold" />
-            
-            <Button
+			<Button
                 android:id="@+id/desv_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
@@ -78,7 +77,6 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/desv_screen"
                 android:textStyle="bold" />
-
         </LinearLayout>
     </ScrollView>
 
